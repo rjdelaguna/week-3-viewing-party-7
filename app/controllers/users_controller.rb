@@ -4,6 +4,10 @@ class UsersController <ApplicationController
   end 
 
   def show 
+    unless session[:user_id] == params[:id].to_i
+      redirect_to root_path 
+      flash[:error] = "Must be logged in."
+    end
     @user = User.find(params[:id])
   end 
 
@@ -12,8 +16,15 @@ class UsersController <ApplicationController
     user[:email] = user[:email].downcase
     new_user = User.create(user)
     if new_user.save
+      session[:user_id] = new_user.id
       flash[:success] = "Welcome, #{new_user.name}!"
-      redirect_to user_path(new_user)
+      if new_user.admin?
+        redirect_to admin_dashboard_path
+      elsif new_user.manager?
+        redirect_to root_path
+      else
+        redirect_to root_path
+      end
     else  
       flash[:error] = new_user.errors.full_messages.to_sentence
       redirect_to register_path
@@ -26,12 +37,24 @@ class UsersController <ApplicationController
   def login_user
     user = User.find_by(email: params[:email])
     if user != nil && user.authenticate(params[:password])
+      session[:user_id] = user.id
       flash[:success] = "Welcome, #{user.name}!"
-      redirect_to root_path
+      if user.admin?
+        redirect_to admin_dashboard_path
+      elsif user.manager?
+        redirect_to root_path
+      else
+        redirect_to root_path
+      end
     else
       flash[:error] = "Sorry, your credentials are bad."
       render :login_form
     end
+  end
+
+  def logout
+    session[:user_id] = nil
+    redirect_to root_path
   end
 
   private 

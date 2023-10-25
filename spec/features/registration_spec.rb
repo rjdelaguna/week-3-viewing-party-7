@@ -11,8 +11,8 @@ RSpec.describe "User Registration" do
     
     click_button 'Create New User'
 
-    expect(current_path).to eq(user_path(User.last.id))
-    expect(page).to have_content("User One's Dashboard")
+    expect(current_path).to eq(root_path)
+    expect(page).to have_content("Welcome, User One!")
   end 
 
   it 'does not create a user if email isnt unique' do 

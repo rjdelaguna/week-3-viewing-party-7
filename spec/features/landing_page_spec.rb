@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe 'Landing Page' do
   before :each do 
-    user1 = User.create(name: "User One", email: "user1@test.com", password: "password")
-    user2 = User.create(name: "User Two", email: "user2@test.com", password: "password1")
+    @user1 = User.create(name: "User One", email: "user1@test.com", password: "password")
+    @user2 = User.create(name: "User Two", email: "user2@test.com", password: "password1")
     visit '/'
   end 
 
@@ -28,11 +28,33 @@ RSpec.describe 'Landing Page' do
     
     expect(current_path).to eq(login_path)
   end 
+  
+  it "when signed in has button to log out" do
+    click_button "Login"
+
+    fill_in :email, with: @user1.email
+    fill_in :password, with: @user1.password
+
+    click_on "Log In"
+
+    expect(current_path).to eq(root_path)
+
+    expect(page).to have_button("Log Out")
+    expect(page).not_to have_button("Create New User")
+    expect(page).not_to have_button("Login")
+  end
 
   it 'lists out existing users' do 
     user1 = User.create(name: "User One", email: "user1@test.com", password: "password")
     user2 = User.create(name: "User Two", email: "user2@test.com", password: "password1")
 
+    click_button "Login"
+
+    fill_in :email, with: user1.email
+    fill_in :password, with: user1.password
+
+    click_on "Log In"
+    
     expect(page).to have_content('Existing Users:')
 
     within('.existing-users') do 
