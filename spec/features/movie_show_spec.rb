@@ -19,12 +19,12 @@ RSpec.describe 'Movies Index Page' do
     fill_in :password, with: @user1.password
 
     click_on "Log In"
-    
-    visit "users/#{@user1.id}"
+
+    visit dashboard_path
 
     click_button "Find Top Rated Movies"
 
-    expect(current_path).to eq("/users/#{@user1.id}/movies")
+    expect(current_path).to eq(movies_path)
 
     expect(page).to have_content("Top Rated Movies")
     
@@ -32,7 +32,7 @@ RSpec.describe 'Movies Index Page' do
 
     click_link(movie_1.title)
 
-    expect(current_path).to eq("/users/#{@user1.id}/movies/#{movie_1.id}")
+    expect(current_path).to eq("/movies/#{movie_1.id}")
 
     expect(page).to have_content(movie_1.title)
     expect(page).to have_content(movie_1.description)

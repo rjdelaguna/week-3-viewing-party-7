@@ -4,11 +4,12 @@ class UsersController <ApplicationController
   end 
 
   def show 
-    unless session[:user_id] == params[:id].to_i
+    if session[:user_id]
+      @user = User.find(session[:user_id])
+    else
       redirect_to root_path 
       flash[:error] = "Must be logged in."
     end
-    @user = User.find(params[:id])
   end 
 
   def create 
